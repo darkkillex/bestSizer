@@ -9,11 +9,11 @@ verify_ssl = true
 gunicorn = "*"
 pandas = "*"
 requests = "*"
-matplotlib = "*"
-numpy= "*"
 dash = "*"
 plotly = "*"
 base64 = "*"
+datetime = "*"
+null = "*"
 
 [requires]
 python_version = "3.8"

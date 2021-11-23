@@ -15,6 +15,9 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 server = app.server
 
+df = None
+dfdtypes = None
+
 
 def create_upload_component():
     return [
@@ -50,6 +53,10 @@ def parse_contents(contents, filename, date):
             # Assume that the user uploaded a CSV file
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')))
+            buffer = io.StringIO()
+            df.info(buf=buffer)
+            df_info = pd.DataFrame(columns=['DF INFO'], data=buffer.getvalue().split('\n'))
+
             if df.empty:
                 df = df.fillna(method='ffill').fillna(method='bfill')
 
@@ -77,11 +84,15 @@ def parse_contents(contents, filename, date):
         html.H6(datetime.datetime.fromtimestamp(date)),
 
         dash_table.DataTable(
+            data=df_info.to_dict('records'),
+            columns=[{'name': i, 'id': i} for i in df_info.columns]
+        ),
+        dash_table.DataTable(
             data=df.to_dict('records'),
             columns=[{'name': i, 'id': i} for i in df.columns]
         ),
 
-        html.Hr(),  # horizontal line
+        html.Hr(),
 
         # For debugging, display the raw contents provided by the web browser
         html.Div('Raw Content'),
